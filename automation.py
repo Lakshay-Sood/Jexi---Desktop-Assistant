@@ -1,4 +1,6 @@
 import pyautogui as pag
+import speech_recognition as sr
+import pyttsx3 as tts
 
 
 def goToSite(website):
@@ -13,8 +15,8 @@ def openFileExplorer():
     pag.hotkey('win', 'e')
 
 
-website = input("Enter website name: ")
-goToSite(website)
+# website = input("Enter website name: ")
+# goToSite(website)
 
 # print(pag.KEY_NAMES)
-# pag.hotkey('fn', 'f9')
+pag.hotkey('fn', 'f9')
