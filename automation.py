@@ -4,7 +4,6 @@ import pyttsx3 as tts
 
 # Initialize the recognizer
 r = sr.Recognizer()
-r2 = sr.Recognizer()
 
 # Function to convert text to
 # speech
@@ -21,7 +20,7 @@ def SpeakText(command):
 # Loop infinitely for user to
 # speak
 
-print('listening...\n')
+
 while(1):
 
     # Exception handling to handle
@@ -37,17 +36,14 @@ while(1):
             r.adjust_for_ambient_noise(source2, duration=0.5)
 
             # listens for the user's input
-            audio2 = r.listen(source2, )
+            audio2 = r.listen(source2)
 
             # Using ggogle to recognize audio
-            # MyText = r.recognize_google(audio2)
-            MyText2 = r2.recognize_google(audio2)
+            MyText = r.recognize_google(audio2)
+            MyText = MyText.lower()
 
-            # MyText = MyText.lower()
-
-            # print("Did you say "+MyText)
-            print("Did you say "+MyText2)
-            # SpeakText(MyText)
+            print("Did you say "+MyText)
+            SpeakText(MyText)
 
     except sr.RequestError as e:
         print("Could not request results; {0}".format(e))

@@ -4,10 +4,26 @@ import pyautogui as pag
 import time
 
 
+def isMatching(text, keywords):
+    text = text.split(' ')
+    counter = 0
+    for word in text:
+        if (word == keywords[counter]):
+            counter += 1
+            if (counter == len(keywords)):
+                return True
+
+    return False
+
+
 def doAutomatedTask(text):
-    if text == 'increase volume':
+    if isMatching(text, ['increase', 'volume']):
         for i in range(10):
             pag.press('volumeup')
+
+    # if text == 'increase volume':
+    #     for i in range(10):
+    #         pag.press('volumeup')
 
     if text == 'decrease volume':
         for i in range(10):
@@ -72,7 +88,10 @@ r.dynamic_energy_threshold = False
 # use the microphone as source for input. Here, we also specify
 # which device ID to specifically look for incase the microphone
 # is not working, an error will pop up saying "device_id undefined"
-while(1):
+
+shouldRun = True
+while(shouldRun):
+    # shouldRun = False
 
     with sr.Microphone(sample_rate=sample_rate,
                        chunk_size=chunk_size) as source:
@@ -86,6 +105,11 @@ while(1):
         # listens for the user's input
         audio = r.listen(source)
         print('------')
+
+        # saving the record audio clip to a file
+        # print(len(audio.get_wav_data()))
+        # with open("audioFile.wav", "wb") as f:
+        #     f.write(audio.get_wav_data())
 
         try:
             text = r.recognize_google(audio)
