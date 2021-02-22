@@ -1,7 +1,7 @@
 # Jexi - Desktop Voice Assistant
 A desktop automation project with voice assistant support.
 
-### This application is currently under development.
+#### *This application is currently under development.*
 
 ### Brief Steps involved are:
 1. Set energy threshold values to determine when to start/stop recording
