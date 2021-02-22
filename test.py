@@ -8,7 +8,7 @@ def isMatching(text, keywords):
     text = text.split(' ')
     counter = 0
     for word in text:
-        if (word == keywords[counter]):
+        if (word.lower() == keywords[counter].lower()):
             counter += 1
             if (counter == len(keywords)):
                 return True
@@ -17,67 +17,117 @@ def isMatching(text, keywords):
 
 
 def doAutomatedTask(text):
+
+    # ================================== 1 == MEDIA begin ========================================
     if isMatching(text, ['increase', 'volume']):
         for i in range(10):
             pag.press('volumeup')
 
-    if isMatching(text, ['decrease', 'volume']):
+    elif isMatching(text, ['decrease', 'volume']):
         for i in range(10):
             pag.press('volumedown')
 
-    if isMatching(text, ['stop', 'music']) or isMatching(text, ['play', 'music']) or isMatching(text, ['pause', 'music']):
+    elif isMatching(text, ['stop', 'music']) or isMatching(text, ['play', 'music']) or isMatching(text, ['pause', 'music']):
         pag.press('playpause')
 
-    if isMatching(text, ['next', 'song']):
+    elif isMatching(text, ['next', 'song']):
         pag.press('nexttrack')
 
-    if isMatching(text, ['previous', 'song']):
+    elif isMatching(text, ['previous', 'song']):
         pag.press('prevtrack')
+# ================================== MEDIA end ========================================
 
-    elif isMatching(text, ['switch', 'application']) or isMatching(text, ['next', 'application']):
-        pag.hotkey('alt', 'tab')
-
-    elif isMatching(text, ['previous', 'application']):
-        pag.hotkey('alt', 'shift', 'tab')
-
+# ================================== 2 == BROWSER begin ========================================
     elif isMatching(text, ['new', 'tab']):
         pag.hotkey('ctrl', 't')
 
     elif isMatching(text, ['close', 'tab']):
         pag.hotkey('ctrl', 'w')
 
+    elif isMatching(text, ['switch', 'tab']) or isMatching(text, ['next', 'tab']):
+        pag.hotkey('ctrl', 'tab')
+
+    elif isMatching(text, ['previous', 'tab']):
+        pag.hotkey('ctrl', 'shift', 'tab')
+
     elif isMatching(text, ['open', 'incognito', 'window']):
         pag.hotkey('ctrl', 'shift', 'n')
 
-# extend this functionality to dynamically fetch website name
+    elif isMatching(text, ['browser', 'history']):
+        pag.hotkey('ctrl', 'h')
+
+    elif isMatching(text, ['download']) or isMatching(text, ['downloads']):
+        pag.hotkey('ctrl', 'j')
+
+    # extend this functionality to dynamically fetch website name
     elif isMatching(text, ['go', 'to', 'facebook.com']):
         pag.hotkey('ctrl', 'l')
         pag.write('facebook.com')
         pag.press('enter')
+# ================================== BROWSER ends ========================================
+
+# ================================== 3 == WINDOWS begin ========================================
+    elif isMatching(text, ['switch', 'application']) or isMatching(text, ['next', 'application']):
+        pag.hotkey('alt', 'tab')
+
+    elif isMatching(text, ['previous', 'application']):
+        pag.hotkey('alt', 'shift', 'tab')
 
     elif isMatching(text, ['desktop']) or isMatching(text, ['minimise']):
         pag.hotkey('win', 'd')
 
-# extend this functionality to dynamically fetch application name
+    elif isMatching(text, ['file', 'explorer']) or isMatching(text, ['this', 'PC']):
+        pag.hotkey('win', 'e')
+
+    # extend this functionality to dynamically fetch application name
     elif isMatching(text, ['open', 'application', 'word']):
         pag.press('win')
+        time.sleep(0.5)
         pag.write('word')
-        time.sleep(1)
+        time.sleep(0.2)
         pag.press('enter')
 
     elif isMatching(text, ['close', 'application']) or isMatching(text, ['close', 'window']):
         pag.hotkey('alt', 'f4')
+# ================================== WINDOWS ends ========================================
 
+# ================================== 4 == VOICE FEEDBACK begin ========================================
+# time
+# date
+# weather
+# movie review
+# book review
+# quotes
+# stock prices
+# cpu usage (os module)
+# any other api
+# ================================== VOICE FEEDBACK ends ========================================
+
+
+# ================================== 5 == TOOLS begin ========================================
     elif isMatching(text, ['screenshot']) or isMatching(text, ['screen', 'shot']):
         pag.press('printscreen')
 
-# this scroll the window at current mouse position
+    # this scroll the window at current mouse position
     elif isMatching(text, ['scroll', 'down']):
         pag.scroll(-300)
 
-# this scroll the window at current mouse position
+    # this scroll the window at current mouse position
     elif isMatching(text, ['scroll', 'up']):
         pag.scroll(300)
+
+# take a selfie
+# task manager
+# right click on taskbar
+# ================================== TOOLS ends ========================================
+
+# ================================== 6 == BASIC CALCULATOR command ========================================
+# with voice feedback
+# ================================== BASIC CALCULATOR ends ========================================
+
+# ================================== 7 == EXIT command ========================================
+    elif text == 'bye bye bye':
+        exit(1)
 
 
 # enter the name of usb microphone that you found
