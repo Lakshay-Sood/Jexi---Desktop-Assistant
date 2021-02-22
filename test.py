@@ -21,42 +21,63 @@ def doAutomatedTask(text):
         for i in range(10):
             pag.press('volumeup')
 
-    # if text == 'increase volume':
-    #     for i in range(10):
-    #         pag.press('volumeup')
-
-    if text == 'decrease volume':
+    if isMatching(text, ['decrease', 'volume']):
         for i in range(10):
             pag.press('volumedown')
 
-    if text == 'music stop' or text == 'music play':
+    if isMatching(text, ['stop', 'music']) or isMatching(text, ['play', 'music']) or isMatching(text, ['pause', 'music']):
         pag.press('playpause')
 
-    if text == 'next song':
+    if isMatching(text, ['next', 'song']):
         pag.press('nexttrack')
 
-    elif text == 'switch application':
+    if isMatching(text, ['previous', 'song']):
+        pag.press('prevtrack')
+
+    elif isMatching(text, ['switch', 'application']) or isMatching(text, ['next', 'application']):
         pag.hotkey('alt', 'tab')
 
-    elif text == 'open new tab':
+    elif isMatching(text, ['previous', 'application']):
+        pag.hotkey('alt', 'shift', 'tab')
+
+    elif isMatching(text, ['new', 'tab']):
         pag.hotkey('ctrl', 't')
 
-    elif text == 'close this tab':
+    elif isMatching(text, ['close', 'tab']):
         pag.hotkey('ctrl', 'w')
 
-    elif text == 'go to facebook.com':
+    elif isMatching(text, ['open', 'incognito', 'window']):
+        pag.hotkey('ctrl', 'shift', 'n')
+
+# extend this functionality to dynamically fetch website name
+    elif isMatching(text, ['go', 'to', 'facebook.com']):
         pag.hotkey('ctrl', 'l')
         pag.write('facebook.com')
         pag.press('enter')
 
-    elif text == 'open application word':
+    elif isMatching(text, ['desktop']) or isMatching(text, ['minimise']):
+        pag.hotkey('win', 'd')
+
+# extend this functionality to dynamically fetch application name
+    elif isMatching(text, ['open', 'application', 'word']):
         pag.press('win')
         pag.write('word')
         time.sleep(1)
         pag.press('enter')
 
-    elif text == 'close this application':
+    elif isMatching(text, ['close', 'application']) or isMatching(text, ['close', 'window']):
         pag.hotkey('alt', 'f4')
+
+    elif isMatching(text, ['screenshot']) or isMatching(text, ['screen', 'shot']):
+        pag.press('printscreen')
+
+# this scroll the window at current mouse position
+    elif isMatching(text, ['scroll', 'down']):
+        pag.scroll(-300)
+
+# this scroll the window at current mouse position
+    elif isMatching(text, ['scroll', 'up']):
+        pag.scroll(300)
 
 
 # enter the name of usb microphone that you found
