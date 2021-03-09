@@ -1,8 +1,13 @@
-# Python 2.x program for Speech Recognition
+# THE MAIN FILE TO RUN FOR DESKTOP AUTOMATION
+
+# imports
 import speech_recognition as sr
-import pyautogui as pag
-import pyttsx3
-import time
+import pyautogui as pag  # for key presses
+import pyttsx3  # text-to-speech
+import time  # for delays, sleep()
+import datetime  # for fetching current date, time
+import requests  # http library
+import json  # to work with json data
 
 
 keywordsFor = {
@@ -42,7 +47,11 @@ keywordsFor = {
     'task manager': [['task', 'manager']],
     'system properties': [['system', 'properties']],
 
-    # ================================== 4 == TOOLS ======================================
+    # ================================== 4 == VOICE FEEDBACK begin =================================
+    'joke': [['joke']],
+    'weather': [['weather']],
+
+    # ================================== 5 == TOOLS ======================================
     'custom screenshot': [['custom', 'screenshot']],
     'screenshot to clipboard': [['screenshot']],
     'scroll down': [['scroll', 'down']],
@@ -73,7 +82,49 @@ def isMatching(text, keywordsList):
     return False
 
 
-######## pag.KEY_NAMES ###############################
+def getJoke(category='general'):
+    # 3 categoties: general, programming, knock-knock
+    url = r"https://official-joke-api.appspot.com/jokes/{}/random".format(
+        category)
+
+    response = requests.get(url)
+    joke = json.loads(response.text)[0]
+
+    tts.setProperty('rate', 150)
+    tts.say(joke['setup'])
+    tts.say(joke['punchline'])
+    tts.runAndWait()
+    tts.setProperty('rate', 200)
+
+
+def getWeather(complete=False):
+    # weather API documentation: https://openweathermap.org/current
+    # fetching weather for 'Delhi' (with api key '57611d1e87cbe8e4d1698088119b87d3')
+    url = r'http://api.openweathermap.org/data/2.5/weather?appid=57611d1e87cbe8e4d1698088119b87d3&units=metric&q=Delhi'
+
+    response = requests.get(url)
+    weather = response.json()
+
+    # won't be a problem at we are statically defining our city
+    if weather['cod'] == '404':
+        print('city not found')
+    else:
+        tts.say('It\'s {} degree celcius.'.format(weather['main']['temp']))
+        tts.say('{} expected.'.format(weather['weather'][0]['description']))
+
+        if complete:
+            tts.say('Also, humidity is {} %.'.format(
+                weather['main']['humidity']))
+            tts.say('And minimum and maximum temperatures are {} and {} degree celcius respectively.'.format(
+                weather['main']['temp_min'], weather['main']['temp_max']))
+
+        tts.runAndWait()
+
+    # tts.say(joke['setup'])
+    # tts.say(joke['punchline'])
+    # tts.runAndWait()
+
+    ######## pag.KEY_NAMES ###############################
 ['\t', '\n', '\r', ' ', '!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
  ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
  'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~',
@@ -150,7 +201,7 @@ def doAutomatedTask(recogText):
     elif isMatching(recogText, keywordsFor['fullscreen']):
         pag.press('f11')
 
-    # ✔✨ NOW: extend this functionality to dynamically fetch string to be searched
+    # ✨✔ NOW: extend this functionality to dynamically fetch string to be searched
     elif isMatching(recogText, [['browser', 'search']]):
         target = recogText.split('search')[1].strip()
         if target.find('for') == 0:
@@ -160,7 +211,7 @@ def doAutomatedTask(recogText):
         pag.write(target)
         pag.press('enter')
 
-    # ✔✨ NOW: extend this functionality to dynamically fetch website name
+    # ✨✔ NOW: extend this functionality to dynamically fetch website name
     elif isMatching(recogText, [['go', 'to']]):
         if (recogText.find('desktop') != -1):
             pag.hotkey('win', 'd')
@@ -212,7 +263,7 @@ def doAutomatedTask(recogText):
     elif isMatching(recogText, keywordsFor['windows settings']):
         pag.hotkey('win', 'i')
 
-    # ✔✨ NOW: extend this functionality to dynamically fetch application name
+    # ✨✔ NOW: extend this functionality to dynamically fetch application name
     elif isMatching(recogText, [['open', 'application']]):
         target = recogText.split('application')[1].strip()
 
@@ -246,14 +297,25 @@ def doAutomatedTask(recogText):
 # ================================== WINDOWS ends ========================================
 
 # ================================== 4 == VOICE FEEDBACK begin ========================================
-# time
-# date
-# weather
+    elif isMatching(recogText, keywordsFor['joke']):
+        if recogText.find('programming') != -1:
+            getJoke('programming')
+        elif recogText.find('knock knock') != -1:
+            getJoke('knock-knock')
+        else:
+            getJoke()
+
+    elif isMatching(recogText, keywordsFor['weather']):
+        if recogText.find('complete') != -1:
+            getWeather(complete=True)
+        else:
+            getWeather()
+
+
 # wikipedia search (library: wikipedia)
 # movie review
 # book review
 # quotes
-# jokes
 # stock prices
 # cpu usage (os module)
 # any other api
@@ -266,6 +328,8 @@ def doAutomatedTask(recogText):
 
     elif isMatching(recogText, keywordsFor['screenshot to clipboard']):
         pag.press('printscreen')
+        tts.say('Done.')
+        tts.runAndWait()
 
     # this scroll the window at current mouse position
     elif isMatching(recogText, keywordsFor['scroll down']):
@@ -297,10 +361,27 @@ def doAutomatedTask(recogText):
         time.sleep(1.5)
         pag.press('space')
 
-    #  💥💥 add VOICE feedback too
+    # ✨✔ add VOICE feedback too
     elif isMatching(recogText, keywordsFor['date time']):
+        today = datetime.datetime.today()
+        askedForDate = False
+        if (recogText.find('date') != -1):
+            tts.say('today is {}'.format(today.strftime('%x')))
+            askedForDate = True
+
+        if (recogText.find('time') != -1):
+            if askedForDate:
+                tts.say('And')
+            # 12-hour format
+            tts.say('It\'s {} {} {}'.format(
+                today.strftime('%I').lstrip('0'), today.strftime('%M').lstrip('0'), today.strftime('%p')))
+            # 24-hour format
+            # tts.say('It\'s {} hours, {} minutes.'.format(
+            #     today.strftime('%H'), today.strftime('%M')))
+
         pag.hotkey('win', 'alt', 'd')
-        time.sleep(3)
+        tts.runAndWait()
+        time.sleep(1)
         pag.hotkey('win', 'alt', 'd')
 
     elif isMatching(recogText, keywordsFor['task view']):
@@ -318,6 +399,8 @@ def doAutomatedTask(recogText):
 
 # ================================== 7 == EXIT command ========================================
     elif isMatching(recogText, keywordsFor['exit this python script']):
+        tts.say('Was nice to see you. Byeeeee.')
+        tts.runAndWait()
         exit(1)
 
 
@@ -357,11 +440,12 @@ r.dynamic_energy_threshold = False
 
 
 tts = pyttsx3.init()
-tts.say('Your desktop assistant is up and running.')
-tts.setProperty('rate', 300)
-tts.say('Let\'s go!')
-tts.setProperty('rate', 200)  # 200 is the default rate (words per minute)
-tts.runAndWait()
+# ✨ STARTUP VOICE MESSAGE
+# tts.say('Your desktop assistant is up and running.')
+# tts.setProperty('rate', 300)
+# tts.say('Let\'s go!')
+# tts.setProperty('rate', 200)  # 200 is the default rate (words per minute)
+# tts.runAndWait()
 
 shouldRun = True
 while(shouldRun):
@@ -381,7 +465,7 @@ while(shouldRun):
         audio = r.listen(source)
         print('------')
 
-        # saving the record audio clip to a file
+        # saving the recorded audio clip to a file
         # print(len(audio.get_wav_data()))
         # with open("audioFile.wav", "wb") as f:
         #     f.write(audio.get_wav_data())
