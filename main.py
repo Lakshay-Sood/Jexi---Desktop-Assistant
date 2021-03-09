@@ -1,13 +1,16 @@
 # THE MAIN FILE TO RUN FOR DESKTOP AUTOMATION
 
 # imports
+from os import cpu_count
 import speech_recognition as sr
 import pyautogui as pag  # for key presses
 import pyttsx3  # text-to-speech
 import time  # for delays, sleep()
 import datetime  # for fetching current date, time
+import psutil   # for current cpu, ram usage
 import requests  # http library
 import json  # to work with json data
+import wikipedia  # to do quick wikipedia search
 
 
 keywordsFor = {
@@ -50,6 +53,10 @@ keywordsFor = {
     # ================================== 4 == VOICE FEEDBACK begin =================================
     'joke': [['joke']],
     'weather': [['weather']],
+    'wikipedia search': [['wikipedia', 'search']],
+    # added 'court' cuz of Speech recog api limitations
+    'quote': [['quote'], ['court']],
+    'cpu ram usage': [['cpu'], ['ram'], ['memory']],
 
     # ================================== 5 == TOOLS ======================================
     'custom screenshot': [['custom', 'screenshot']],
@@ -120,11 +127,8 @@ def getWeather(complete=False):
 
         tts.runAndWait()
 
-    # tts.say(joke['setup'])
-    # tts.say(joke['punchline'])
-    # tts.runAndWait()
 
-    ######## pag.KEY_NAMES ###############################
+######## pag.KEY_NAMES ###############################
 ['\t', '\n', '\r', ' ', '!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
  ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
  'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '{', '|', '}', '~',
@@ -311,13 +315,46 @@ def doAutomatedTask(recogText):
         else:
             getWeather()
 
+    elif isMatching(recogText, keywordsFor['wikipedia search']):
+        target = recogText.split('search')[1].strip()
+        if target.find('for') == 0:
+            target = target[4:]
+        try:
+            result = wikipedia.summary(target, sentences=2)
+            print(result)
+            tts.say(result)
+            tts.runAndWait()
+        except:
+            tts.say('Unable to do a search. Try searching through a browser.')
+            tts.runAndWait()
+            # can add a feature where we ask user in case of DisambiguationError
+            # except wikipedia.exceptions.DisambiguationError as e:
+            #   print e.options
+            #  output => [u'Mercury (mythology)', u'Mercury (planet)', u'Mercury (element)', u'Mercury, Nevada', ...]
 
-# wikipedia search (library: wikipedia)
+    elif isMatching(recogText, keywordsFor['quote']):
+        url = 'https://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json'
+        response = requests.get(url)
+        quote = response.json()
+        print(quote['quoteText'])
+        tts.say(quote['quoteText'])
+        tts.runAndWait()
+
+    elif isMatching(recogText, keywordsFor['cpu ram usage']):
+        # Calling psutil.cpu_precent() for 2 seconds
+        cpuPercent = psutil.cpu_percent(2)
+        print('CPU usage is: {}%'.format(cpuPercent))
+        tts.say('CPU usage is: {}%'.format(cpuPercent))
+
+        # Getting % usage of virtual_memory (3rd field)
+        ramPercent = psutil.virtual_memory()[2]
+        print('and RAM usage is: {} %:'.format(ramPercent))
+        tts.say('and RAM usage is: {} %:'.format(ramPercent))
+        tts.runAndWait()
+
 # movie review
 # book review
-# quotes
 # stock prices
-# cpu usage (os module)
 # any other api
 # ================================== VOICE FEEDBACK ends ========================================
 
