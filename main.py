@@ -16,6 +16,7 @@ import wikipedia  # to do quick wikipedia search
 keywordsFor = {
     # ================================== 0 == Assistant Tools ========================================
     'ignore this statement': [['ignore'], ['forget', 'it']],
+    'exit this python script': [['bye', 'bye', 'bye']],
 
     # ================================== 1 == MEDIA ========================================
     'increase volume': [['increase', 'volume']],
@@ -70,8 +71,10 @@ keywordsFor = {
     'take a selfie': [['selfie']],
     'date time': [['date'], ['time'], ['calendar']],
     'task view': [['task'], ['view']],
-
-    'exit this python script': [['bye', 'bye', 'bye']]
+    'take a note': [['take', 'note']],
+    'type as said': [['type']],
+    'save': [['save']],
+    'save as': [['save', 'as']]
 
 }
 
@@ -423,6 +426,36 @@ def doAutomatedTask(recogText):
 
     elif isMatching(recogText, keywordsFor['task view']):
         pag.hotkey('win', 'tab')
+
+    # 💥💥 check this feature
+    elif isMatching(recogText, keywordsFor['take a note']):
+        pag.hotkey('win', 's')
+        time.sleep(0.5)
+        pag.write('notepad')
+        time.sleep(0.2)
+        pag.press('enter')
+
+    # 💥💥 check this feature
+    elif isMatching(recogText, keywordsFor['type as said']):
+        tts.say('okay. typing.')
+        tts.runAndWait()
+        # store everything that is said after first 'type'
+        target = recogText.split('type')[1:].join(' ')
+        pag.write(target, interval=0.1)
+
+    # 💥💥 check this feature
+    elif isMatching(recogText, keywordsFor['save']):
+        pag.hotkey('ctrl', 's')
+        tts.say('saved')
+        tts.runAndWait()
+
+    # 💥💥 check this feature
+    elif isMatching(recogText, keywordsFor['save as']):
+        target = recogText.split('as')[1]
+        pag.press(['alt', 'f', 'a'])
+        time.sleep(0.5)
+        pag.write(target)
+        pag.press('enter')
 
 
 # right click on taskbar
