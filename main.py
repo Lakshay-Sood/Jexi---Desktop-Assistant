@@ -36,7 +36,9 @@ keywordsFor = {
     'browser history': [['browser', 'history']],
     'browser downloads': [['download'], ['downloads']],
     'refresh webpage': [['refresh']],
-    'fullscreen': [['fullscreen']],
+    'fullscreen': [['fullscreen'], ['full', 'screen']],
+    # browser search <keywords>
+    # go to <website_name>
 
     # ================================== 3 == WINDOWS ======================================
     'next application': [['switch', 'application'], ['next', 'application']],
@@ -50,6 +52,7 @@ keywordsFor = {
     'lock this pc': [['lock']],
     'task manager': [['task', 'manager']],
     'system properties': [['system', 'properties']],
+    # open application <app_name>
 
     # ================================== 4 == VOICE FEEDBACK begin =================================
     'joke': [['joke']],
@@ -323,7 +326,7 @@ def doAutomatedTask(recogText):
         if target.find('for') == 0:
             target = target[4:]
         try:
-            result = wikipedia.summary(target, sentences=2)
+            result = wikipedia.summary(target, sentences=1)
             print(result)
             tts.say(result)
             tts.runAndWait()
@@ -373,11 +376,11 @@ def doAutomatedTask(recogText):
 
     # this scroll the window at current mouse position
     elif isMatching(recogText, keywordsFor['scroll down']):
-        pag.scroll(-400)    # these many pixels
+        pag.scroll(-300)    # these many pixels
 
     # this scroll the window at current mouse position
     elif isMatching(recogText, keywordsFor['scroll up']):
-        pag.scroll(400)
+        pag.scroll(300)
 
     # this scroll the window at current mouse position
     elif isMatching(recogText, keywordsFor['scroll to top']):
@@ -440,14 +443,8 @@ def doAutomatedTask(recogText):
         tts.say('okay. typing.')
         tts.runAndWait()
         # store everything that is said after first 'type'
-        target = recogText.split('type')[1:].join(' ')
+        target = ''.join(recogText.split('type')[1:])
         pag.write(target, interval=0.1)
-
-    # 💥💥 check this feature
-    elif isMatching(recogText, keywordsFor['save']):
-        pag.hotkey('ctrl', 's')
-        tts.say('saved')
-        tts.runAndWait()
 
     # 💥💥 check this feature
     elif isMatching(recogText, keywordsFor['save as']):
@@ -456,6 +453,12 @@ def doAutomatedTask(recogText):
         time.sleep(0.5)
         pag.write(target)
         pag.press('enter')
+
+    # 💥💥 check this feature
+    elif isMatching(recogText, keywordsFor['save']):
+        pag.hotkey('ctrl', 's')
+        tts.say('saved')
+        tts.runAndWait()
 
 
 # right click on taskbar
@@ -548,9 +551,9 @@ while(shouldRun):
             text = text.lower()
 # 💥💥 concatenate instructions using "AND"
             # text = text.split('and')
-            # text.forEach(command => {
+            # for command in text :
             #     doAutomatedTask(command)
-            # })
+
             doAutomatedTask(text)
 
         # error occurs when google could not understand what was said

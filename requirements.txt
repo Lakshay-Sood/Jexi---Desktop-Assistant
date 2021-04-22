@@ -1,0 +1,6 @@
+SpeechRecognition==3.8.1
+wikipedia==1.4.0
+PyAutoGUI==0.9.52
+pyttsx3==2.90
+psutil==5.8.0
+requests==2.25.1
